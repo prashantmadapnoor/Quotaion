@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(120deg, #3498db, #8e44ad);
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: white;
+        }
+        p {
+            margin-bottom: 40px;
+            color: #555;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .contact-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 300px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .contact-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15);
+        }
+        .contact-card img {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 15px;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+        .contact-card h3 {
+            margin-top: 10px;
+            margin-bottom: 15px;
+            color: #ff6a00;
+            font-size: 1.5em;
+        }
+        .contact-card p {
+            margin-bottom: 15px;
+            color: #666;
+            font-size: 1em;
+        }
+        .contact-card a {
+            color: #ff6a00;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        .contact-card a:hover {
+            color: #d35400;
+        }
+    </style>
+</head>
+<body>
+    <h1>Get in Touch</h1>
+    <h2>Mysuru Green Technologies</h2>
+    <div class="container">
+        <div class="contact-card">
+            <img src="{{ url_for('static', filename='email-icon.png') }}" alt="email" class="email-icon">
+            <h3>CHAT TO US</h3>
+            <p>Our friendly team is here to help.</p>
+            <a href="mailto:shubhachethan@mert.in">shubhachethan@mert.in</a>
+        </div>
+        <div class="contact-card">
+            <img src="{{ url_for('static', filename='location-icon.png') }}" alt="location" class="location-icon">
+            <h3>OFFICE</h3>
+            <p>Come say hello at our office HQ.</p>
+            <p>IC-05, STEP Guest House, Block-G, First Floor, SJCE-STEP<br>Mysuru, 570006</p>
+        </div>
+        <div class="contact-card">
+            <img src="{{ url_for('static', filename='phone-icon.png') }}" alt="phone" class="phone-icon">
+            <h3>PHONE</h3>
+            <p>Mon-Fri from 10am to 6pm</p>
+            <a href="tel:+7338374007">+91 7338374007</a>
+        </div>
+    </div>
+</body>
+</html>

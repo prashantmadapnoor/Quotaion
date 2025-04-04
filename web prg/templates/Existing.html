@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Quotation</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 60%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #itemList {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Create Quotation</h1>
+        <form id="quotationForm">
+            <div class="form-group">
+                <label for="category">Select Category</label>
+                <select id="category" name="category" required>
+                    <option value="On-Grid">On-Grid</option>
+                    <option value="Hybrid">Hybrid</option>
+                    <option value="Off-Grid">Off-Grid</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="capacity">Select Capacity</label>
+                <select id="capacity" name="capacity" required>
+                    <option value="3kW">3kW</option>
+                    <option value="4kW">4kW</option>
+                    <option value="5kW">5kW</option>
+                    <option value="7kW">7kW</option>
+                    <option value="10kW">10kW</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="customer_name">Customer Name</label>
+                <input type="text" id="customer_name" name="customer_name" required>
+            </div>
+            <div class="form-group">
+                <label for="customer_village">Customer Village</label>
+                <input type="text" id="customer_village" name="customer_village">
+            </div>
+            <div class="form-group">
+                <label for="customer_email">Customer Email</label>
+                <input type="email" id="customer_email" name="customer_email" required>
+            </div>
+            <div class="form-group">
+                <label for="customer_phone">Customer Phone</label>
+                <input type="tel" id="customer_phone" name="customer_phone" required>
+            </div>
+            <div class="form-group">
+                <button type="button" id="fetchItems">Fetch Items</button>
+            </div>
+            <div id="itemList"></div>
+            <div class="form-group">
+                <button type="submit" id="generateQuotation">Generate Quotation</button>
+            </div>
+        </form>
+    </div>
+    <script>
+        $(document).ready(function() {
+            $('#category, #capacity').change(function() {
+                const category = $('#category').val();
+                const capacity = $('#capacity').val();
+                $.ajax({
+                    url: '/fetch_items',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ category: category, capacity: capacity }),
+                    success: function(response) {
+                        const items = response.items;
+                        let itemTable = '<table><tr><th>Serial No</th><th>Description</th><th>Quantity</th><th>Price</th><th>GST (%)</th><th>GST Amt</th><th>Total</th></tr>';
+                        items.forEach((item, index) => {
+                            itemTable += `
+                                <tr class="selected-item">
+                                    <td>${index + 1}</td>
+                                    <td class="description">${item.description}</td>
+                                    <td class="quantity">${item.quantity}</td>
+                                    <td class="price">${item.price}</td>
+                                    <td class="gst">${item.gst_percentage}</td>
+                                    <td class="gst-amount">${item.gst_amount}</td>
+                                    <td class="total">${item.total}</td>
+                                </tr>`;
+                        });
+                        itemTable += '</table>';
+                        $('#itemList').html(itemTable);
+                    },
+                    error: function() {
+                        alert("Error fetching items.");
+                    }
+                });
+            });
+
+            $('#generateQuotation').click(function(e) {
+                e.preventDefault();
+                const customerDetails = {
+                    customer_name: $('#customer_name').val(),
+                    customer_village: $('#customer_village').val(),
+                    customer_email: $('#customer_email').val(),
+                    customer_phone: $('#customer_phone').val(),
+                    total_amount: calculateTotalAmount(),
+                    items: collectSelectedItems()
+                };
+                $.ajax({
+                    url: '/dgenerate_pdf',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(customerDetails),
+                    xhrFields: { responseType: 'blob' },
+                    success: function(blob) {
+                        let link = document.createElement('a');
+                        link.href = window.URL.createObjectURL(blob);
+                        link.download = "quotation.pdf";
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        alert("Quotation generated successfully!");
+                    },
+                    error: function() {
+                        alert("Error generating quotation.");
+                    }
+                });
+            });
+
+            function calculateTotalAmount() {
+    let total = 0;
+    $('.selected-item').each(function() {
+        let rowTotal = parseFloat($(this).find('.total').text()); // Assuming the "Total" column has class "total"
+        if (!isNaN(rowTotal)) {
+            total += rowTotal;
+        }
+    });
+    return total.toFixed(2);
+}
+            function collectSelectedItems() {
+                let items = [];
+                $('.selected-item').each(function(index) {
+                    items.push({
+                        serial_no: index + 1,
+                        description: $(this).find('.description').text(),
+                        quantity: parseInt($(this).find('.quantity').text()),
+                        price: parseFloat($(this).find('.price').text()),
+                        gst_percentage: parseFloat($(this).find('.gst').text()),
+                        gst_amount: parseFloat($(this).find('.gst-amount').text()),
+                        total: parseFloat($(this).find('.total').text())
+                    });
+                });
+                return items;
+            }
+        });
+    </script>
+</body>
+</html>

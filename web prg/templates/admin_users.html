@@ -1,0 +1,42 @@
+{% extends "admin.html" %}
+{% block content %}
+<h2>User Data</h2>
+<table class="table table-striped table-bordered">
+    <thead class="thead-dark">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Lastname</th>
+            <th>Email</th>
+            <th>phone</th>
+            <th>Password</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user[0] }}</td>
+            <td>{{ user[1] }}</td>
+            <td>{{ user[2] }}</td>
+            <td>{{ user[3] }}</td>
+            <td>{{ user[4] }}</td>
+            <td>{{ user[5] }}</td>
+            <td>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton{{ user[0] }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        ...
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ user[0] }}">
+                        <form action="{{ url_for('delete_user', userid=user[0]) }}" method="POST" style="display: inline;">
+                            <button type="submit" class="dropdown-item">Delete</button>
+                        </form>
+                        <a class="dropdown-item" href="{{ url_for('register', email=user[2]) }}">Edit</a>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .profile-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .profile-card {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-card img {
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+        }
+
+        .profile-card h2 {
+            color: #333;
+            margin: 15px 0 5px;
+        }
+
+        .profile-card p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .button {
+            padding: 10px 15px;
+            color: white;
+            background-color: orange;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 14px;
+        }
+
+        .button:hover {
+            background-color: orange;
+        }
+
+        .edit-form, .change-password-form {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .edit-form input, .change-password-form input {
+            margin-bottom: 15px;
+            padding: 10px;
+            width: calc(100% - 20px);
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-button {
+            padding: 10px 20px;
+            color: white;
+            background-color: orange;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .form-button:hover {
+            background-color: orange;
+        }
+
+        .alert {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .alert-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="profile-card"> 
+            <img src="{{ url_for('static', filename='user.png') }}" alt="User Image">
+            <h2>{{ name }}</h2>
+            <p>{{ email }}</p>
+        </div>
+
+        <div class="buttons">
+            <button class="button" id="edit-profile">Update Profile</button>
+            <button class="button" id="change-password">Change Password</button>
+        </div>
+
+        <div class="edit-form" id="edit-profile-form">
+            <form action="{{ url_for('update_user_details') }}" method="POST">
+                <input type="hidden" name="user_id" value="{{ session['userid'] }}">
+                <input type="text" name="name" placeholder="First Name" value="{{ name }}" required>
+                <input type="text" name="lastname" placeholder="Last Name" value="{{ lastname }}" required>
+                <input type="email" name="email" placeholder="Email" value="{{ email }}" required>
+                <input type="text" name="phone" placeholder="Phone" value="{{ phone }}" required>
+                <button type="submit" class="form-button">Update Details</button>
+            </form>
+        </div>
+
+        <div class="change-password-form" id="change-password-form">
+            <form action="{{ url_for('change_password') }}" method="POST">
+                <input type="hidden" name="user_id" value="{{ session['userid'] }}">
+                <input type="password" name="current_password" placeholder="Current Password" required>
+                <input type="password" name="new_password" placeholder="New Password" required>
+                <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+                <button type="submit" class="form-button">Change Password</button>
+            </form>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <script>
+        // JavaScript to toggle between the edit profile and change password forms
+        document.getElementById('edit-profile').addEventListener('click', function() {
+            document.getElementById('edit-profile-form').style.display = 'block';
+            document.getElementById('change-password-form').style.display = 'none';
+        });
+
+        document.getElementById('change-password').addEventListener('click', function() {
+            document.getElementById('change-password-form').style.display = 'block';
+            document.getElementById('edit-profile-form').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
