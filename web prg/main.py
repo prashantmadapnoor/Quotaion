@@ -1,6 +1,6 @@
 from flask import Flask,flash, render_template, request, redirect, url_for, session,jsonify, send_file,send_from_directory
 from flask_mysqldb import MySQL
-from app import app 
+from main import app
 import json
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
