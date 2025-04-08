@@ -4,6 +4,7 @@ from main import app
 import json
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+from main import app
 import re
 import random
 from fpdf import FPDF
