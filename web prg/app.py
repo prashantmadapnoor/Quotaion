@@ -1,5 +1,6 @@
 from flask import Flask,flash, render_template, request, redirect, url_for, session,jsonify, send_file,send_from_directory
 from flask_mysqldb import MySQL
+from app import app 
 import json
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -945,5 +946,5 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run()
 
